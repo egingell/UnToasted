@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_untoaster" default="compile.module.untoaster">
+  <dirname property="module.untoaster.basedir" file="${ant.file.module_untoaster}"/>
+  
+  <property name="module.jdk.home.untoaster" value="${jdk.home.android_api_17_platform_(1)}"/>
+  <property name="module.jdk.bin.untoaster" value="${jdk.bin.android_api_17_platform_(1)}"/>
+  <property name="module.jdk.classpath.untoaster" value="jdk.classpath.android_api_17_platform_(1)"/>
+  
+  <property name="compiler.args.untoaster" value="${compiler.args}"/>
+  
+  <property name="untoaster.output.dir" value="${module.untoaster.basedir}/build/classes/debug"/>
+  <property name="untoaster.testoutput.dir" value="${module.untoaster.basedir}/build/classes/debug"/>
+  
+  <path id="untoaster.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="untoaster.module.production.classpath">
+    <path refid="${module.jdk.classpath.untoaster}"/>
+    <path refid="library.xposedbridgeapi-42.classpath"/>
+  </path>
+  
+  <path id="untoaster.runtime.production.module.classpath">
+    <pathelement location="${untoaster.output.dir}"/>
+    <path refid="library.xposedbridgeapi-42.classpath"/>
+  </path>
+  
+  <path id="untoaster.module.classpath">
+    <path refid="${module.jdk.classpath.untoaster}"/>
+    <pathelement location="${untoaster.output.dir}"/>
+    <path refid="library.xposedbridgeapi-42.classpath"/>
+  </path>
+  
+  <path id="untoaster.runtime.module.classpath">
+    <pathelement location="${untoaster.output.dir}"/>
+    <path refid="library.xposedbridgeapi-42.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.untoaster">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.untoaster">
+    <patternset refid="excluded.from.module.untoaster"/>
+  </patternset>
+  
+  <path id="untoaster.module.sourcepath">
+    <dirset dir="${module.untoaster.basedir}">
+      <include name="build/source/rs/debug"/>
+      <include name="src/main/res"/>
+      <include name="build/source/aidl/debug"/>
+      <include name="src/main/java"/>
+      <include name="build/res/rs/debug"/>
+      <include name="build/source/r/debug"/>
+      <include name="build/source/buildConfig/debug"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.untoaster" depends="compile.module.untoaster.production,compile.module.untoaster.tests" description="Compile module UnToaster"/>
+  
+  <target name="compile.module.untoaster.production" depends="register.custom.compilers" description="Compile module UnToaster; production classes">
+    <mkdir dir="${untoaster.output.dir}"/>
+    <javac2 destdir="${untoaster.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.untoaster}/javac">
+      <compilerarg line="${compiler.args.untoaster}"/>
+      <bootclasspath refid="untoaster.module.bootclasspath"/>
+      <classpath refid="untoaster.module.production.classpath"/>
+      <src refid="untoaster.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.untoaster"/>
+    </javac2>
+    
+    <copy todir="${untoaster.output.dir}">
+      <fileset dir="${module.untoaster.basedir}/build/source/rs/debug">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.untoaster.basedir}/src/main/res">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.untoaster.basedir}/build/source/aidl/debug">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.untoaster.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.untoaster.basedir}/build/res/rs/debug">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.untoaster.basedir}/build/source/r/debug">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.untoaster.basedir}/build/source/buildConfig/debug">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.untoaster.tests" depends="register.custom.compilers,compile.module.untoaster.production" description="compile module UnToaster; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.untoaster" description="cleanup module">
+    <delete dir="${untoaster.output.dir}"/>
+    <delete dir="${untoaster.testoutput.dir}"/>
+  </target>
+</project>

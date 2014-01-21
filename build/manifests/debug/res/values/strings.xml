@@ -1,0 +1,26 @@
+<!--
+  ~ This file is part of ButteredToast.
+  ~
+  ~ Copyright 2013-2014 Gabriel Castro (c)
+  ~
+  ~     ButteredToast is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     ButteredToast is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with ButteredToast.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="app_name">UnToaster Xposed</string>
+    <string name="sorry">This is just a proof of concept. There\'s no interface.\n\nTo filter Toasts, add files named &lt;package name&gt; (e.g &quot;com.egingell.untoaster&quot;) - this is the package name of the app that generates the Toast - to /sdcard/UnToaster with the text of the Toast you want to block. One per each line. Regex is ok. Check the Xposed log for the package name.) for the pachage name.</string>
+    <string name="xposedlog">Xposed Log</string>
+    <string name="back">Back</string>
+    <string name="nofile">Sorry, I couldn\'t open the Xposed Log.</string>
+</resources>

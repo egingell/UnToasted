@@ -1,0 +1,13 @@
+# incremental data. DO NOT EDIT.
+# format is <lastModified> <length> <SHA-1> <path>
+# Encoding is UTF-8
+1389821000891 4063 75100c96d5a8668b8ee5bd76c3744e55156053f0 C:\data\S4\sdcard\AppProjects\UnToasterProject\UnToaster\src\main\res\drawable-mdpi\ic_launcher.png
+1389823170445 212 e00a4320b61543ff40916f2e4d7239223001cf48 C:\data\S4\sdcard\AppProjects\UnToasterProject\UnToaster\src\main\res\values\dimens.xml
+1389821000891 8105 687125d90a0216090ab92e39c37e46ba1c2294ee C:\data\S4\sdcard\AppProjects\UnToasterProject\UnToaster\src\main\res\drawable-hdpi\ic_launcher.png
+1389823170498 149 86943ba67cfb5d9457f246bb5ba1ffc2e63563e0 C:\data\S4\sdcard\AppProjects\UnToasterProject\UnToaster\src\main\res\values\styles.xml
+1389821003352 669 bfc037872e62a0b8b9c264a7b3c7bdc2e8eb02c1 C:\data\S4\sdcard\AppProjects\UnToasterProject\UnToaster\src\main\res\layout\fragment_main.xml
+1389823420945 311 c986f74d2743a9ca02ad0537fd13e0117bdb426b C:\data\S4\sdcard\AppProjects\UnToasterProject\UnToaster\src\main\res\layout\activity_main.xml
+1389821000892 25769 2ede695b49c6c60e150c42c297ead26b5d34add2 C:\data\S4\sdcard\AppProjects\UnToasterProject\UnToaster\src\main\res\drawable-xxhdpi\ic_launcher.png
+1389821003311 358 4e7023247eba857b18a09f72c680169b11aff002 C:\data\S4\sdcard\AppProjects\UnToasterProject\UnToaster\src\main\res\values-w820dp\dimens.xml
+1389821000892 12898 979fbc16ead63c0fe6116c7a7911f6f4712ff69c C:\data\S4\sdcard\AppProjects\UnToasterProject\UnToaster\src\main\res\drawable-xhdpi\ic_launcher.png
+1389821003288 226 db40327d40dfbd3399dc049f7ea1ca26a3a2066c C:\data\S4\sdcard\AppProjects\UnToasterProject\UnToaster\src\main\res\values\strings.xml
