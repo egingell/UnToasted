@@ -24,7 +24,6 @@ package com.egingell.untoaster.hooks;
 
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.os.Environment;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -74,9 +73,8 @@ public class HookToastShow extends XC_MethodReplacement {
 					}
 				} while (lv.getChildCount() > i);
 			} while (false);
-			String extSdCard = Environment.getExternalStorageDirectory().getPath();
 			
-			File ignoresFileDir = new File(extSdCard, "UnToaster");
+			File ignoresFileDir = new File(Util.extSdCard, Util.ignoresDir);
 			ignoresFileDir.mkdir();
 			
 			for (String content : list) {
@@ -100,7 +98,7 @@ public class HookToastShow extends XC_MethodReplacement {
 		    	XposedBridge.log("UnToaster: " + packageName + " (" + appName + ")\n\t: " + content + "\n\t: " + blocked);
     		}
 	    } catch (Throwable e) {
-	        XposedBridge.log(e);
+	    	e.printStackTrace();
 	    }
         if (show) {
         	return XposedBridge.invokeOriginalMethod(param.method, t, param.args);

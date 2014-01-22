@@ -19,8 +19,14 @@
 
 <resources>
     <string name="app_name">UnToaster Xposed</string>
-    <string name="sorry">This is just a proof of concept. There\'s no interface.\n\nTo filter Toasts, add files named &lt;package name&gt; (e.g &quot;com.egingell.untoaster&quot;) - this is the package name of the app that generates the Toast - to /sdcard/UnToaster with the text of the Toast you want to block. One per each line. Regex is ok. Check the Xposed log for the package name.) for the pachage name.</string>
+    <string name="sorry">To add filters, put the package name (e.g &quot;com.egingell.untoaster&quot;) - heck the Xposed log for the package name - and the text you\'re blocking (regex is OK) you want to block in the other box and click Save.) for the pachage name.</string>
     <string name="xposedlog">Xposed Log</string>
     <string name="back">Back</string>
     <string name="nofile">Sorry, I couldn\'t open the Xposed Log.</string>
+    <string name="saveButton">Save</string>
+    <string name="cancelButton">Cancel</string>
+    <string name="resetButton">Reset</string>
+    <string name="deleteButton">Delete</string>
+    <string name="packageHint">com.example.app</string>
+    <string name="patternHint">Regex patterns or strings. One per line. Example:\n\nToast message\\.\nApp .* loaded\\.\n\nNote that since it does use regex, periods and other special characters must be escaped with a \"\\\".</string>
 </resources>
