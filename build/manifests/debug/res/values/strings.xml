@@ -19,7 +19,7 @@
 
 <resources>
     <string name="app_name">UnToaster Xposed</string>
-    <string name="sorry">To add filters, put the package name (e.g &quot;com.egingell.untoaster&quot;) - heck the Xposed log for the package name - and the text you\'re blocking (regex is OK) you want to block in the other box and click Save.) for the pachage name.</string>
+    <string name="sorry">To add filters, put the package name (e.g &quot;com.egingell.untoaster&quot;) - check the Xposed log for the package name - and the text you\'re blocking (regex is OK) in the other box and click Save.</string>
     <string name="xposedlog">Xposed Log</string>
     <string name="back">Back</string>
     <string name="nofile">Sorry, I couldn\'t open the Xposed Log.</string>
