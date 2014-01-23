@@ -190,7 +190,7 @@ public class UnToaster extends ListActivity {
 					saveButton.setEnabled(false);
 				} else {
 					deleteButton.setEnabled(true);
-					saveButton.setEnabled(false);
+					saveButton.setEnabled(true);
 				}
 			}
 			@Override
