@@ -35,8 +35,7 @@ public class Util {
 	public static String ignoresDir = "UnToaster";
     private Util() {}
 
-    static public boolean readFromFile(ArrayList<String> ignores, String fName, boolean emptyFile) throws Throwable {
-	    boolean fileExists = true;
+    static public boolean readFromFile(final ArrayList<String> ignores, String fName, boolean emptyFile, boolean fileExists) throws Throwable {
 	    try {
 	    	File tFile = new File(fName);
 			emptyFile = tFile.isFile() && tFile.length() <= 1;

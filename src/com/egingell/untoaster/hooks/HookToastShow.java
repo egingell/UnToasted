@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with UnToasted.  If not, see <http://www.gnu.org/licenses/>.
  *     
- *     Xposed log: tail -n 100 /data/data/de.robv.android.xposed.installer/log/debug.log  >/sdcard/UnToaster.log
+ *     Xposed log: tail -f -n 100 /data/data/de.robv.android.xposed.installer/log/debug.log  >/sdcard/UnToaster.log
  */
 
 package com.egingell.untoaster.hooks;
@@ -47,7 +47,8 @@ public class HookToastShow extends XC_MethodReplacement {
         //context = c;
     }
 
-    @TargetApi(Build.VERSION_CODES.FROYO)
+    @SuppressWarnings("unchecked")
+	@TargetApi(Build.VERSION_CODES.FROYO)
 	@Override
     protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
     	boolean show = true;
@@ -76,19 +77,14 @@ public class HookToastShow extends XC_MethodReplacement {
 			
 			File ignoresFileDir = new File(Util.extSdCard, Util.ignoresDir);
 			ignoresFileDir.mkdir();
-			
-			ArrayList<String> ignores = new ArrayList<String>();
-			boolean emptyFile = false;
-			boolean fileExists = Util.readFromFile(ignores, ignoresFileDir + "/all", emptyFile);
-			if (emptyFile && fileExists) {
-				ignores.remove(0);
+			ArrayList<String> ignores = new ArrayList<String>(), tmp = new ArrayList<String>();
+			boolean emptyFile = false, fileExists= false;
+			if (! emptyFile && Util.readFromFile(tmp, ignoresFileDir + "/all", emptyFile, fileExists)) {
+				ignores = (ArrayList<String>) tmp.clone();
 			}
-						
+ 			Util.readFromFile(ignores, ignoresFileDir + "/" + packageName, emptyFile, fileExists);
+
 			for (String content : list) {
-		 		if (! fileExists) {
-		 			fileExists = Util.readFromFile(ignores, ignoresFileDir + "/" + packageName, emptyFile);
-		 		}
-	
 		 		for (String s : ignores) {
 					if (filter(s, content)) {
 						//t.setText(content + "\nUnToaster: blocking.");
@@ -96,14 +92,11 @@ public class HookToastShow extends XC_MethodReplacement {
 						show = false;
 					}
 				}
-		 		
 		 		if (fileExists && emptyFile) {
 					//t.setText(content + "\nUnToaster: blocking.");
 					blocked = "blocked";
 					show = false;
 		 		}
-		 		
-		 		fileExists = false;
 		    	XposedBridge.log("UnToaster: " + packageName + " (" + appName + ")\n\t: " + content + "\n\t: " + blocked);
     		}
 	    } catch (Throwable e) {
@@ -117,7 +110,7 @@ public class HookToastShow extends XC_MethodReplacement {
    }
    private boolean filter(String needle, String haystack) {
 	   boolean b = Pattern.matches(needle, haystack);
-	   //XposedBridge.log("UnToaster: checking\n\tpattern " + needle + "\n\tin " + haystack + "\n\tresult " + (b ? "true" : "false"));
+	   XposedBridge.log("UnToaster: checking\n\tpattern " + needle + "\n\tin " + haystack + "\n\tresult " + (b ? "true" : "false"));
 	   return b;
    }
 }
