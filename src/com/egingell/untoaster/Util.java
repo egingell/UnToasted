@@ -35,12 +35,16 @@ public class Util {
 	public static String ignoresDir = "UnToaster";
     private Util() {}
 
-    static public void readFromFile(ArrayList<String> ignores, String fName, boolean emptyFile, boolean fileExists) throws Throwable {
+    static public boolean readFromFile(ArrayList<String> ignores, String fName, boolean emptyFile) throws Throwable {
+	    boolean fileExists = true;
 	    try {
 	    	File tFile = new File(fName);
 			emptyFile = tFile.isFile() && tFile.length() <= 1;
 			fileExists = tFile.isFile() && tFile.exists();
-			if (fileExists && ! emptyFile) {
+			if (!fileExists) {
+				return fileExists;
+			}
+			if (! emptyFile) {
 				FileInputStream is = new FileInputStream(tFile);
 				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 				String line = reader.readLine();
@@ -53,6 +57,7 @@ public class Util {
 		} catch (Throwable e) {
 			e.printStackTrace();
 	    }
+	    return fileExists;
     }
     static public ArrayList<String> readDirectory(String dir) throws Throwable {
     	ArrayList<String> ret = new ArrayList<String>();

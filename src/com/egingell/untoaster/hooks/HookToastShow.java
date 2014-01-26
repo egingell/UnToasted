@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with UnToasted.  If not, see <http://www.gnu.org/licenses/>.
  *     
- *     Xposed log: tail -f /data/data/de.robv.android.xposed.installer/log/debug.log
+ *     Xposed log: tail -n 100 /data/data/de.robv.android.xposed.installer/log/debug.log  >/sdcard/UnToaster.log
  */
 
 package com.egingell.untoaster.hooks;
@@ -77,10 +77,15 @@ public class HookToastShow extends XC_MethodReplacement {
 			File ignoresFileDir = new File(Util.extSdCard, Util.ignoresDir);
 			ignoresFileDir.mkdir();
 			
+			ArrayList<String> ignores = new ArrayList<String>();
+			boolean emptyFile = false;
+			boolean fileExists = Util.readFromFile(ignores, ignoresFileDir + "/all", emptyFile);
+						
 			for (String content : list) {
-				ArrayList<String> ignores = new ArrayList<String>();
-				boolean emptyFile = false, fileExists = false;
-				Util.readFromFile(ignores, ignoresFileDir + "/" + packageName, emptyFile, fileExists);
+		 		if (! fileExists) {
+		 			fileExists = Util.readFromFile(ignores, ignoresFileDir + "/" + packageName, emptyFile);
+		 		}
+	
 		 		for (String s : ignores) {
 					if (filter(s, content)) {
 						//t.setText(content + "\nUnToaster: blocking.");
@@ -94,7 +99,8 @@ public class HookToastShow extends XC_MethodReplacement {
 					blocked = "blocked";
 					show = false;
 		 		}
-	
+		 		
+		 		fileExists = false;
 		    	XposedBridge.log("UnToaster: " + packageName + " (" + appName + ")\n\t: " + content + "\n\t: " + blocked);
     		}
 	    } catch (Throwable e) {

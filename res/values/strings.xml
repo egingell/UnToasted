@@ -27,6 +27,6 @@
     <string name="cancelButton">Cancel</string>
     <string name="resetButton">Reset</string>
     <string name="deleteButton">Delete</string>
-    <string name="packageHint">com.example.app</string>
+    <string name="packageHint">com.example.app - use "all" for all apps.</string>
     <string name="patternHint">Regex patterns or strings. One per line. Example:\n\nToast message\\.\nApp .* loaded\\.\n\nNote that since it does use regex, periods and other special characters must be escaped with a \"\\\".</string>
 </resources>
