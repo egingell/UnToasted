@@ -80,6 +80,9 @@ public class HookToastShow extends XC_MethodReplacement {
 			ArrayList<String> ignores = new ArrayList<String>();
 			boolean emptyFile = false;
 			boolean fileExists = Util.readFromFile(ignores, ignoresFileDir + "/all", emptyFile);
+			if (emptyFile && fileExists) {
+				ignores.remove(0);
+			}
 						
 			for (String content : list) {
 		 		if (! fileExists) {
