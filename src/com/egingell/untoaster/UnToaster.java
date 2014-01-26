@@ -30,6 +30,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -58,7 +59,7 @@ public class UnToaster extends ListActivity {
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.layout);
 		File ignoresFileDir = new File(Util.ignoresDir);
-		lv = getListView();
+		lv = (ListView) findViewById(android.R.id.list);
 		saveButton = (Button) findViewById(R.id.saveButton);
 		resetButton = (Button) findViewById(R.id.resetButton);
 		cancelButton = (Button) findViewById(R.id.cancelButton);
@@ -89,7 +90,26 @@ public class UnToaster extends ListActivity {
         lv.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> l, View v, int position, long id) {
-				itemClick(l, v, position, id);
+				// Make the newly clicked item the currently selected one.
+		    	TextView tv = (TextView) v;
+	    		Log.e("UnToaster", "Clicked position " + position + " with ID " + id + ".");
+		    	try {
+		    		currentFile = tv.getText().toString();
+		    	} catch (NullPointerException e) {
+		    		e.printStackTrace();
+		    	}
+		    	fileName.setText(currentFile);
+		    	try {
+					String info = Util.readFromFile(new File(Util.extSdCard + "/" + Util.ignoresDir + "/" + currentFile));
+					editPattern.setText(info);
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+				cancelButton.setEnabled(true);
+				deleteButton.setEnabled(true);
+				resetButton.setEnabled(false);
+				saveButton.setEnabled(false);
+		        lv.setItemChecked(position, true);
 			}
         });
         resetButton.setEnabled(false);
@@ -129,6 +149,7 @@ public class UnToaster extends ListActivity {
 					Util.writeToFile(Util.extSdCard + "/" + Util.ignoresDir + "/" + fName, editPattern.getText().toString());
 					if (!currentFile.equals(fName)) {
 						addAndSort(fName);
+						adapter.notifyDataSetChanged();
 					}
 					currentFile = fName;
 				} catch (Throwable e) {
@@ -147,6 +168,7 @@ public class UnToaster extends ListActivity {
 					f.delete();
 					deleteAndSort(currentFile);
 					currentFile = "";
+					adapter.notifyDataSetChanged();
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
@@ -211,28 +233,6 @@ public class UnToaster extends ListActivity {
 		resetButton.setEnabled(false);
 		saveButton.setEnabled(false);
 	}
-	private void itemClick(AdapterView<?> l, View v, int position, long id) {
-		// Make the newly clicked item the currently selected one.
-    	ListView lv = getListView();
-    	TextView tv = (TextView) lv.getChildAt(position);
-    	try {
-    		currentFile = tv.getText().toString();
-    	} catch (NullPointerException e) {
-    		e.printStackTrace();
-    	}
-    	fileName.setText(currentFile);
-    	try {
-			String info = Util.readFromFile(new File(Util.extSdCard + "/" + Util.ignoresDir + "/" + currentFile));
-			editPattern.setText(info);
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-		cancelButton.setEnabled(true);
-		deleteButton.setEnabled(true);
-		resetButton.setEnabled(false);
-		saveButton.setEnabled(false);
-        lv.setItemChecked(position, true);
-	}
 	private void addAndSort(String item) {
 		mStrings.add(item);
 		sort();
@@ -243,12 +243,16 @@ public class UnToaster extends ListActivity {
 	}
 	private void sort() {
 		Collections.sort(mStrings, String.CASE_INSENSITIVE_ORDER);
-		adapter.notifyDataSetChanged();
+		// debug
+		int i = 0;
+		for (String s : mStrings) {
+			Log.d("UnToaster", s + " is at position " + (i++) + ".");
+		}
 	}
     private void populateList() throws Throwable {
     	try {
 		   	mStrings = Util.readDirectory(Util.extSdCard + "/" + Util.ignoresDir);
-		   	adapter.notifyDataSetChanged();
+	    	sort();
 		} catch (Throwable e) {
 			e.printStackTrace();
 	    }

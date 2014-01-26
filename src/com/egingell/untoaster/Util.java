@@ -27,8 +27,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import android.os.Environment;
-
-import de.robv.android.xposed.XposedBridge;
+import android.util.Log;
 
 public class Util {
 	public static String extSdCard = Environment.getExternalStorageDirectory().getPath();
@@ -62,7 +61,9 @@ public class Util {
     	ArrayList<String> ret = new ArrayList<String>();
     	try {
     		File mDir = new File(dir);
+    		int i = 0;
     		for (String file : mDir.list()) {
+    			Log.d("UnToaster", "Adding " + file + " to ListView at position " + (i++) + ".");
     			ret.add(file);
     		}
 		} catch (Throwable e) {
@@ -74,6 +75,9 @@ public class Util {
     	writeToFile(new File(file), contents);
     }
     static public void writeToFile(File file, String contents) throws Throwable {
+    	if (file.isDirectory()) {
+    		return;
+    	}
     	FileOutputStream fs = new FileOutputStream(file);
     	file.createNewFile();
     	fs.write(contents.getBytes());
@@ -84,6 +88,10 @@ public class Util {
     }
     static public String readFromFile(File file) throws Throwable {
     	String ret = "";
+    	if (file.isDirectory()) {
+    		Log.d("UnToaster", file.getPath());
+    		return ret;
+    	}
 	    try {
 	    	FileInputStream is = new FileInputStream(file);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -95,7 +103,7 @@ public class Util {
 			reader.close();
 			is.close();
 		} catch (Throwable e) {
-	        XposedBridge.log(e);
+			e.printStackTrace();
 	    }
     	return ret;
     }
