@@ -53,6 +53,12 @@ public class UnToaster extends ListActivity {
 	private Button saveButton, resetButton, cancelButton, deleteButton;
 	ArrayAdapter<String> adapter;
 	ListView lv;
+    final Runnable saveAction = new Runnable() {
+		@Override
+		public void run() {
+			saveButton.performClick();
+		}
+	};
 	@TargetApi(Build.VERSION_CODES.FROYO)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +72,6 @@ public class UnToaster extends ListActivity {
 		deleteButton = (Button) findViewById(R.id.deleteButton);
 		editPattern = (EditText) findViewById(R.id.editPattern);
 		fileName = (EditText) findViewById(R.id.fileName);
-		
 		try {
 			populateList();
 		} catch (Throwable e) {
@@ -130,6 +135,8 @@ public class UnToaster extends ListActivity {
 				fileName.setText(currentFile);
 				resetButton.setEnabled(false);
 				saveButton.setEnabled(false);
+				fileName.removeCallbacks(saveAction);
+				editPattern.removeCallbacks(saveAction);
 			}
 		});
         cancelButton.setOnClickListener(new OnClickListener(){
@@ -191,6 +198,9 @@ public class UnToaster extends ListActivity {
 					deleteButton.setEnabled(true);
 					saveButton.setEnabled(true);
 				}
+				fileName.removeCallbacks(saveAction);
+				editPattern.removeCallbacks(saveAction);
+				fileName.postDelayed(saveAction, 5000);
 			}
 			@Override
 			public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}
@@ -214,6 +224,9 @@ public class UnToaster extends ListActivity {
 					deleteButton.setEnabled(true);
 					saveButton.setEnabled(true);
 				}
+				fileName.removeCallbacks(saveAction);
+				editPattern.removeCallbacks(saveAction);
+				editPattern.postDelayed(saveAction, 5000);
 			}
 			@Override
 			public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}
@@ -228,6 +241,8 @@ public class UnToaster extends ListActivity {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+		fileName.removeCallbacks(saveAction);
+		editPattern.removeCallbacks(saveAction);
         cancelButton.setEnabled(false);
 		deleteButton.setEnabled(false);
 		resetButton.setEnabled(false);
@@ -257,4 +272,17 @@ public class UnToaster extends ListActivity {
 			e.printStackTrace();
 	    }
     }
+    private int elapsedTime = 0;
+    private long now = System.currentTimeMillis() / 1000;
+    private boolean running = false;
+    private void startTimer() {
+        elapsedTime = 0;
+        now = System.currentTimeMillis() / 1000;
+        running = true;
+    }
+    private void stopTimer() {
+        running = false;
+    }
+    private int expires = 5;
+    
 }
