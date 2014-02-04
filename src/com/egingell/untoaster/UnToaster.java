@@ -39,10 +39,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-//import de.robv.android.xposed.XposedBridge;
-//import android.view.View;
-//import android.widget.Button;
-//import android.widget.TextView;
 import android.widget.ListView;
 
 public class UnToaster extends ListActivity {
@@ -75,7 +71,7 @@ public class UnToaster extends ListActivity {
 		try {
 			populateList();
 		} catch (Throwable e) {
-			e.printStackTrace();
+			Util.log(e);
 		}
 		
 		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mStrings);
@@ -101,14 +97,14 @@ public class UnToaster extends ListActivity {
 		    	try {
 		    		currentFile = tv.getText().toString();
 		    	} catch (NullPointerException e) {
-		    		e.printStackTrace();
+		    		Util.log(e);
 		    	}
 		    	fileName.setText(currentFile);
 		    	try {
 					String info = Util.readFromFile(new File(Util.extSdCard + "/" + Util.ignoresDir + "/" + currentFile));
 					editPattern.setText(info);
 				} catch (Throwable e) {
-					e.printStackTrace();
+					Util.log(e);
 				}
 				cancelButton.setEnabled(true);
 				deleteButton.setEnabled(true);
@@ -130,7 +126,7 @@ public class UnToaster extends ListActivity {
 				try {
 					editPattern.setText(Util.readFromFile(Util.extSdCard + "/" + Util.ignoresDir + "/" + currentFile));
 				} catch (Throwable e) {
-					e.printStackTrace();
+					Util.log(e);
 				}
 				fileName.setText(currentFile);
 				resetButton.setEnabled(false);
@@ -160,11 +156,13 @@ public class UnToaster extends ListActivity {
 					}
 					currentFile = fName;
 				} catch (Throwable e) {
-					e.printStackTrace();
+					Util.log(e);
 				}
 				resetButton.setEnabled(false);
 				saveButton.setEnabled(false);
 				deleteButton.setEnabled(true);
+				fileName.removeCallbacks(saveAction);
+				editPattern.removeCallbacks(saveAction);
 			}
 		});
         deleteButton.setOnClickListener(new OnClickListener() {
@@ -177,7 +175,7 @@ public class UnToaster extends ListActivity {
 					currentFile = "";
 					adapter.notifyDataSetChanged();
 				} catch (Throwable e) {
-					e.printStackTrace();
+					Util.log(e);
 				}
 				cancel();
 			}
@@ -239,7 +237,7 @@ public class UnToaster extends ListActivity {
 			editPattern.setText("");
 			fileName.setText("");
 		} catch (Throwable e) {
-			e.printStackTrace();
+			Util.log(e);
 		}
 		fileName.removeCallbacks(saveAction);
 		editPattern.removeCallbacks(saveAction);
@@ -261,7 +259,7 @@ public class UnToaster extends ListActivity {
 		// debug
 		int i = 0;
 		for (String s : mStrings) {
-			Log.d("UnToaster", s + " is at position " + (i++) + ".");
+			Util.log(s + " is at position " + (i++) + ".");
 		}
 	}
     private void populateList() throws Throwable {
@@ -269,20 +267,7 @@ public class UnToaster extends ListActivity {
 		   	mStrings = Util.readDirectory(Util.extSdCard + "/" + Util.ignoresDir);
 	    	sort();
 		} catch (Throwable e) {
-			e.printStackTrace();
+			Util.log(e);
 	    }
     }
-    private int elapsedTime = 0;
-    private long now = System.currentTimeMillis() / 1000;
-    private boolean running = false;
-    private void startTimer() {
-        elapsedTime = 0;
-        now = System.currentTimeMillis() / 1000;
-        running = true;
-    }
-    private void stopTimer() {
-        running = false;
-    }
-    private int expires = 5;
-    
 }

@@ -24,7 +24,6 @@ import android.widget.Toast;
 import com.egingell.untoaster.hooks.HookToastShow;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -32,9 +31,7 @@ public class XposedHook implements IXposedHookLoadPackage, IXposedHookZygoteInit
 
     public static String PATH = null;
 
-    public XposedHook() {
-    	XposedBridge.log("UnToaster: Loaded.");
-    }
+    public XposedHook() {}
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {

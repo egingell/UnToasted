@@ -26,14 +26,33 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import de.robv.android.xposed.XposedBridge;
+
 import android.os.Environment;
 import android.util.Log;
 
 public class Util {
 	public static String extSdCard = Environment.getExternalStorageDirectory().getPath();
+	public static String prefsFileName = null;
 	public static String ignoresDir = "UnToaster";
+	
     private Util() {}
-
+    
+    public static void log(Throwable e) {
+    	try {
+    		XposedBridge.log(e);
+    	} catch (Throwable ignored) {
+    		Log.e("UnToaster", null, e);
+    	}
+    }
+    public static void log(String e) {
+    	try {
+    		XposedBridge.log(e);
+    	} catch (Throwable ignored) {
+    		Log.e("UnToaster", e);
+    	}
+    }
+    
     static public boolean readFromFile(final ArrayList<String> ignores, String fName, boolean emptyFile, boolean fileExists) throws Throwable {
 	    try {
 	    	File tFile = new File(fName);
@@ -53,7 +72,7 @@ public class Util {
 				reader.close();
 			}
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log(e);
 	    }
 	    return fileExists;
     }
@@ -63,11 +82,11 @@ public class Util {
     		File mDir = new File(dir);
     		int i = 0;
     		for (String file : mDir.list()) {
-    			Log.d("UnToaster", "Adding " + file + " to ListView at position " + (i++) + ".");
+    			log("Adding " + file + " to ListView at position " + (i++) + ".");
     			ret.add(file);
     		}
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log(e);
 	    }
     	return ret;
     }
@@ -103,7 +122,7 @@ public class Util {
 			reader.close();
 			is.close();
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log(e);
 	    }
     	return ret;
     }

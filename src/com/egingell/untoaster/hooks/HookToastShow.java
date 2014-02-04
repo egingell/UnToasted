@@ -17,10 +17,10 @@
  *     along with UnToasted.  If not, see <http://www.gnu.org/licenses/>.
  *     
  *     Xposed log: tail -f -n 100 /data/data/de.robv.android.xposed.installer/log/debug.log  >/sdcard/UnToaster.log
+ *     Logcat: logcat | grep "UnToaster"
  */
 
 package com.egingell.untoaster.hooks;
-
 
 import android.annotation.TargetApi;
 import android.os.Build;
@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import com.egingell.untoaster.Util;
@@ -42,6 +43,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class HookToastShow extends XC_MethodReplacement {
 
     private final XC_LoadPackage.LoadPackageParam mParam;
+    private final HashMap<String,Pattern> patternCache = new HashMap<String,Pattern>();
+    
     public HookToastShow(XC_LoadPackage.LoadPackageParam packageParam) {
         this.mParam = packageParam;
         //context = c;
@@ -97,10 +100,10 @@ public class HookToastShow extends XC_MethodReplacement {
 					blocked = "blocked";
 					show = false;
 		 		}
-		    	XposedBridge.log("UnToaster: " + packageName + " (" + appName + ")\n\t: " + content + "\n\t: " + blocked);
+		 		Util.log("UnToaster: " + packageName + " (" + appName + ")\n\t: " + content + "\n\t: " + blocked);
     		}
 	    } catch (Throwable e) {
-	    	e.printStackTrace();
+	    	Util.log(e);
 	    }
         if (show) {
         	return XposedBridge.invokeOriginalMethod(param.method, t, param.args);
@@ -109,8 +112,11 @@ public class HookToastShow extends XC_MethodReplacement {
         }
    }
    private boolean filter(String needle, String haystack) {
-	   boolean b = Pattern.matches(needle, haystack);
-	   XposedBridge.log("UnToaster: checking\n\tpattern " + needle + "\n\tin " + haystack + "\n\tresult " + (b ? "true" : "false"));
+	   if (! patternCache.containsKey(needle)) {
+		   patternCache.put(needle, Pattern.compile(needle));
+	   }
+	   boolean b = patternCache.get(needle).matcher(haystack).find();
+	   Util.log("UnToaster: checking\n\tpattern " + needle + "\n\tin " + haystack + "\n\tresult " + (b ? "true" : "false"));
 	   return b;
    }
 }
