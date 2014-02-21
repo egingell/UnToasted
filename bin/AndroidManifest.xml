@@ -18,31 +18,26 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="10"
-    android:versionName="1.1.7"
+    android:versionCode="11"
+    android:versionName="1.1.8"
     package="com.egingell.untoaster" >
     <uses-sdk
-        android:minSdkVersion="6"
-        android:targetSdkVersion="19"
-    />
+        android:minSdkVersion="15"
+        android:targetSdkVersion="19" />
 	<uses-permission 
-	    android:name="android.permission.READ_EXTERNAL_STORAGE"
-	/>
+	    android:name="android.permission.READ_EXTERNAL_STORAGE" />
 	<uses-permission
-		android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-	/>
+		android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<application
         android:allowBackup="true"
         android:icon="@drawable/toaster"
-        android:label="@string/app_name"
-	>
+        android:label="@string/app_name" >
         <meta-data android:name="xposedmodule" android:value="true"/>
         <meta-data android:name="xposedminversion" android:value="2.0*"/>
         <meta-data android:name="xposeddescription" android:value="Selectively block Toast notifications."/>
         <activity
             android:label="@string/app_name"
-            android:name=".UnToaster"
-        >
+            android:name=".UnToaster" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

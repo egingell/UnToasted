@@ -31,13 +31,13 @@ public class XposedHook implements IXposedHookLoadPackage, IXposedHookZygoteInit
 
     public static String PATH = null;
 
-    public XposedHook() {}
+    public XposedHook() {
+    }
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
     	XposedHelpers.findAndHookMethod(Toast.class, "show", new HookToastShow(loadPackageParam));
     }
-
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {

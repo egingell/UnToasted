@@ -22,86 +22,91 @@
 
 package com.egingell.untoaster.hooks;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
+import com.egingell.untoaster.MySettings;
 import com.egingell.untoaster.Util;
+import static com.egingell.untoaster.Util.splitPattern;
 
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class HookToastShow extends XC_MethodReplacement {
-
+	private MySettings pAll, appSettings, settings;
     private final XC_LoadPackage.LoadPackageParam mParam;
     private final HashMap<String,Pattern> patternCache = new HashMap<String,Pattern>();
-    
+    String packageName;
     public HookToastShow(XC_LoadPackage.LoadPackageParam packageParam) {
         this.mParam = packageParam;
-        //context = c;
+		packageName = mParam.packageName;//.appInfo.packageName;
+		settings = new MySettings(packageName);
+        pAll = new MySettings("all");
+    	appSettings = new MySettings("com.egingell.untoaster");
     }
 
-    @SuppressWarnings("unchecked")
-	@TargetApi(Build.VERSION_CODES.FROYO)
 	@Override
     protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
     	boolean show = true;
     	Toast t = (Toast) param.thisObject;
     	try {
+    		appSettings.reload();
+    		settings.reload();
+    		pAll.reload();
 			String blocked = "allowed";
 			View view = t.getView();
 			// Friendly App Name
 			String appName = view.getContext().getPackageManager().getApplicationLabel(mParam.appInfo).toString();
 			
 			// Package Name.
-			String packageName = mParam.appInfo.packageName;
-			
 			ArrayList<String> list = new ArrayList<String>();
-			do {
-				int i = 0;
+			int i = 0;
+			try {
 				LinearLayout lv = ((LinearLayout) view);
 				do {
 					try {
-						list.add(((TextView) lv.getChildAt(i++)).getText().toString().replace("\n", " ").trim());
+						list.add(splitPattern.matcher(((TextView) lv.getChildAt(i++)).getText().toString()).replaceAll(" ").trim());
 					} catch (ClassCastException e) {
-						// It's not a valid String. Skip it.
+						Util.log("Can't find TextView for " + lv.toString());
 					}
 				} while (lv.getChildCount() > i);
-			} while (false);
-			
-			File ignoresFileDir = new File(Util.extSdCard, Util.ignoresDir);
-			ignoresFileDir.mkdir();
-			ArrayList<String> ignores = new ArrayList<String>(), tmp = new ArrayList<String>();
-			boolean emptyFile = false, fileExists= false;
-			if (! emptyFile && Util.readFromFile(tmp, ignoresFileDir + "/all", emptyFile, fileExists)) {
-				ignores = (ArrayList<String>) tmp.clone();
+			} catch (Throwable e) {
+				Util.log("Unable to find a layout for " + appName);
 			}
- 			Util.readFromFile(ignores, ignoresFileDir + "/" + packageName, emptyFile, fileExists);
-
-			for (String content : list) {
-		 		for (String s : ignores) {
-					if (filter(s, content)) {
-						//t.setText(content + "\nUnToaster: blocking.");
-						blocked = "blocked";
-						show = false;
-					}
-				}
-		 		if (fileExists && emptyFile) {
-					//t.setText(content + "\nUnToaster: blocking.");
-					blocked = "blocked";
-					show = false;
+			String all = pAll.get("content", "NA").trim();
+			String fPackage = settings.get("content", "NA").trim();
+	 		String patterns = "";
+	 		
+	 		if (! fPackage.equals("NA")) {
+	 			if (fPackage.equals("")) {
+	 				fPackage = ".*";
+	 			}
+		 		if (! all.equals("NA")) {
+		 			patterns += all + "\n" + fPackage;
+		 		} else {
+		 			patterns += fPackage;
 		 		}
-		 		Util.log("UnToaster: " + packageName + " (" + appName + ")\n\t: " + content + "\n\t: " + blocked);
-    		}
+	 		} else if (! all.equals("NA")) {
+	 			patterns += all;
+	 		}
+	 		for (String content : list) {
+	 			if (! patterns.trim().equals("NA") && ! patterns.trim().equals("")) {
+		 			for (String s : splitPattern.split(patterns)) {
+						if (filter(s, content)) {
+							blocked = "blocked";
+							show = false;
+						}
+		 			}
+		 		}
+		 		Util.log(packageName + "#show (" + appName + ")\n\thaystack: " + content + "\n\tneedles: " + all + "<=>" + fPackage + "\n\t: " + blocked);
+	 		}
 	    } catch (Throwable e) {
 	    	Util.log(e);
 	    }
@@ -116,7 +121,7 @@ public class HookToastShow extends XC_MethodReplacement {
 		   patternCache.put(needle, Pattern.compile(needle));
 	   }
 	   boolean b = patternCache.get(needle).matcher(haystack).find();
-	   Util.log("UnToaster: checking\n\tpattern " + needle + "\n\tin " + haystack + "\n\tresult " + (b ? "true" : "false"));
+	   Util.log("UnToaster#filter: checking\n\tpattern " + needle + "\n\tin " + haystack + "\n\tresult " + (b ? "true" : "false"));
 	   return b;
    }
 }

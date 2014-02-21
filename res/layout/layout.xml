@@ -5,19 +5,9 @@
     android:gravity="center"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="fill_parent"
-        android:layout_height="20dip"
-        android:layout_gravity="center"
-        android:layout_weight="0.06"
-        android:text="@string/sorry"
-        android:textSize="15sp" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:gravity="center" >
 
         <Button
@@ -47,23 +37,24 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/saveButton" />
-
     </LinearLayout>
 
     <EditText
         android:id="@+id/fileName"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="33dp"
+        android:layout_weight="0.01"
         android:ems="10"
         android:hint="@string/packageHint"
-        android:inputType="text" />
+        android:inputType="text" >
+
+        <requestFocus />
+    </EditText>
 
     <EditText
         android:id="@+id/editPattern"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_weight="0.06"
+        android:layout_height="90dp"
         android:ems="10"
         android:gravity="center_vertical|top"
         android:hint="@string/patternHint"
@@ -77,5 +68,4 @@
         android:clickable="true"
         android:drawSelectorOnTop="false"
         android:longClickable="false" />
-
 </LinearLayout>

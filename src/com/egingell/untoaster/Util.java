@@ -3,12 +3,12 @@
  *
  * Copyright 2014 Eric Gingell (c)
  *
- *     ButteredToast is free software: you can redistribute it and/or modify
+ *     UnToaster is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
  *
- *     ButteredToast is distributed in the hope that it will be useful,
+ *     UnToaster is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
@@ -25,18 +25,30 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import de.robv.android.xposed.XposedBridge;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Environment;
 import android.util.Log;
 
 public class Util {
-	public static String extSdCard = Environment.getExternalStorageDirectory().getPath();
+	public static String extSdCard;
 	public static String prefsFileName = null;
-	public static String ignoresDir = "UnToaster";
+	final public static String ignoresDir = "UnToaster";
+	final public static Pattern splitPattern = Pattern.compile("[\r\n]+");
+	final static public HashMap<String,SharedPreferences> prefsMap = new HashMap<String,SharedPreferences>();
 	
-    private Util() {}
+    public static void init() {
+		try {
+			extSdCard = Environment.getExternalStorageDirectory().getPath();
+		} catch (Throwable e) {
+			log(e);
+		}
+    }
     
     public static void log(Throwable e) {
     	try {
@@ -90,6 +102,53 @@ public class Util {
 	    }
     	return ret;
     }
+    static public void moveDir(File src, File dst) {
+		for (File f : src.listFiles()) {
+			try {
+				writeToFile(dst, readFromFile(f));
+				f.delete();
+			} catch (Throwable e) {
+				log(e);
+			}
+		}
+    }
+    static public int NO_LIMIT = 0;
+    public static void logToApp(String addText) {
+		try {
+	    	final File out = new File(Environment.getDataDirectory(), "data/com.egingell.untoaster/cache/log.log");
+	    	out.createNewFile();
+			addText += "\n" + getLogedToApp(97);
+			FileOutputStream fs = new FileOutputStream(out);
+			fs.write(addText.getBytes());
+			fs.close();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+    }
+    public static String getLogedToApp() {
+    	return getLogedToApp(NO_LIMIT);
+    }
+    public static String getLogedToApp(int limit) {
+    	String ret = "";
+    	if (limit == NO_LIMIT) {
+    		limit = 97;
+    	}
+		try {
+	    	final File out = new File(Environment.getDataDirectory(), "data/com.egingell.untoaster/cache/log.log");
+	    	out.createNewFile();
+			FileInputStream is = new FileInputStream(out);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+			String line;
+			int i = 97;
+			while ((line = reader.readLine()) != null && --i > NO_LIMIT) {
+				ret += line;
+			}
+			reader.close();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		return ret;
+    }
     static public void writeToFile(String file, String contents) throws Throwable {
     	writeToFile(new File(file), contents);
     }
@@ -125,5 +184,19 @@ public class Util {
 			log(e);
 	    }
     	return ret;
+    }
+    static public void getSharedPreferences(String name) {
+    	if (prefsMap.get(name) != null) {
+    		return;
+    	}
+    	MySettings s = new MySettings(name);
+    	prefsMap.put(name, s.get());
+    }
+    static public void getSharedPreferences(Context context, String name) {
+    	if (prefsMap.get(name) != null) {
+    		return;
+    	}
+    	MySettings s = new MySettings(context, name);
+		prefsMap.put(name, s.get(context));
     }
 }
