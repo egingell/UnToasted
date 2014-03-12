@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.regex.Pattern;
 
 import de.robv.android.xposed.XposedBridge;
 
@@ -39,7 +38,6 @@ public class Util {
 	public static String extSdCard;
 	public static String prefsFileName = null;
 	final public static String ignoresDir = "UnToaster";
-	final public static Pattern splitPattern = Pattern.compile("[\r\n]+");
 	final static public HashMap<String,SharedPreferences> prefsMap = new HashMap<String,SharedPreferences>();
 	
     public static void init() {
