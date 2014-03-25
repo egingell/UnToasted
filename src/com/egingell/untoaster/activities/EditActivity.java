@@ -17,11 +17,15 @@
  *     along with UnToasted.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.egingell.untoaster;
+package com.egingell.untoaster.activities;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import com.egingell.untoaster.R;
+import com.egingell.untoaster.common.MySettings;
+import com.egingell.untoaster.common.Util;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -40,12 +44,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ListView;
 
-public class UnToaster extends ListActivity {
+public class EditActivity extends ListActivity {
 	private ArrayList<String> mStrings = new ArrayList<String>();
 	private String currentFile = "";
 	private EditText editPattern, fileName;
 	private Button saveButton, resetButton, cancelButton, deleteButton;
 	public static Context context;
+	private static Context mContext;
 	ArrayAdapter<String> adapter;
 	ListView lv;
     final Runnable saveAction = new Runnable() {
@@ -56,12 +61,15 @@ public class UnToaster extends ListActivity {
 	};
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mContext = this;
 		try {
 			Util.init();
-			Util.getSharedPreferences(this, "com.egingell.untoaster");
-	        setContentView(R.layout.layout);
+			for (String s : Util.commonPrefs) {
+				Util.prefs.put(s, new MySettings(this, s));
+			}
+	        setContentView(R.layout.list_layout);
 			//File ignoresFileDir = new File(Util.ignoresDir);
 			lv = (ListView) findViewById(android.R.id.list);
 			saveButton = (Button) findViewById(R.id.saveButton);
@@ -72,19 +80,23 @@ public class UnToaster extends ListActivity {
 			fileName = (EditText) findViewById(R.id.fileName);
 			//TextView logView = (TextView) findViewById(R.id.log);
 			
-			//logView.setText(Util.getLogedToApp());
-			
+			//logView.setText(Util.getLoggedToApp());
+			try {
+				currentFile = savedInstanceState.getString("currentFile", "");
+				setText();
+			} catch (Throwable e) {}
 			context = ((ViewGroup) lv.getParent()).getContext();
 			
 			File ignoresFileDir = new File(Util.extSdCard, Util.ignoresDir);
 			if (ignoresFileDir.exists()) {
 				for (File f : ignoresFileDir.listFiles()) {
 					try {
-						Util.getSharedPreferences(this, "com.egingell.untoaster");
-						Util.getSharedPreferences(this, f.getName());
+						Util.prefs.put(f.getName(), new MySettings(this, f.getName()));
 
-						Util.prefsMap.get("com.egingell.untoaster").edit().putBoolean(f.getName(), true).commit();
-						Util.prefsMap.get(f.getName()).edit().putString("content", Util.readFromFile(f)).commit();
+						MySettings myAppSettings = Util.prefs.get(getPackageName()), thisPackage = Util.prefs.get(f.getName());
+						
+						myAppSettings.get(this).edit().putBoolean(f.getName(), true).commit();
+						thisPackage.get(this).edit().putString("content", Util.readFromFile(f)).commit();
 					} catch (Throwable e) {
 						Util.log(e);
 					}
@@ -115,17 +127,17 @@ public class UnToaster extends ListActivity {
 		    		Log.e("UnToaster", "Clicked position " + position + " with ID " + id + ".");
 			    	try {
 			    		currentFile = tv.getText().toString();
+			    		savedInstanceState.putString("currentFile", currentFile);
 			    	} catch (NullPointerException e) {
 			    		Util.log(e);
 			    	}
 			    	fileName.setText(currentFile);
 			    	try {
-						Util.getSharedPreferences(UnToaster.this, currentFile);
-						editPattern.setText(Util.prefsMap.get(currentFile).getString("content", ""));
+			    		setText();
 					} catch (Throwable e) {
 						Util.log(e);
 					}
-					cancelButton.setEnabled(true);
+					//cancelButton.setEnabled(true);
 					deleteButton.setEnabled(true);
 					resetButton.setEnabled(false);
 					saveButton.setEnabled(false);
@@ -134,7 +146,7 @@ public class UnToaster extends ListActivity {
 	        });
 	        resetButton.setEnabled(false);
 			saveButton.setEnabled(false);
-	        cancelButton.setEnabled(false);
+	        //cancelButton.setEnabled(false);
 			deleteButton.setEnabled(false);
 	        resetButton.setOnClickListener(new OnClickListener(){
 				@Override
@@ -143,23 +155,20 @@ public class UnToaster extends ListActivity {
 						return;
 					}
 					try {
-						Util.getSharedPreferences(UnToaster.this, currentFile);
-
-						editPattern.setText(Util.prefsMap.get(currentFile).getString("content", ""));
+						setText();
 					} catch (Throwable e) {
 						Util.log(e);
 					}
-					fileName.setText(currentFile);
 					resetButton.setEnabled(false);
 					saveButton.setEnabled(false);
-					fileName.removeCallbacks(saveAction);
+					//fileName.removeCallbacks(saveAction);
 					editPattern.removeCallbacks(saveAction);
 				}
 			});
 	        cancelButton.setOnClickListener(new OnClickListener(){
 				@Override
 				public void onClick(View v) {
-					cancel();
+					finish();
 				}
 			});
 	        saveButton.setOnClickListener(new OnClickListener(){
@@ -170,23 +179,25 @@ public class UnToaster extends ListActivity {
 						return;
 					}
 					try {
-						Util.getSharedPreferences(UnToaster.this, fName);
-						Util.getSharedPreferences(UnToaster.this, "com.egingell.untoaster");
+						Util.prefs.put(fName, new MySettings(mContext, fName));
+						MySettings thisPackage = Util.prefs.get(fName), mine = Util.prefs.get("com.egingell.untoaster");
 						
-						Util.prefsMap.get(fName).edit().putString("content", editPattern.getText().toString()).commit();
-						Util.prefsMap.get("com.egingell.untoaster").edit().putBoolean(fName, true).commit();
+						thisPackage.get(mContext).edit().putString("content", editPattern.getText().toString()).commit();
+						mine.get(mContext).edit().putBoolean(fName, true).commit();
+						
 						if (!currentFile.equals(fName)) {
 							addAndSort(fName);
 							adapter.notifyDataSetChanged();
 						}
 						currentFile = fName;
+						savedInstanceState.putString("currentFile", currentFile);
 					} catch (Throwable e) {
 						Util.log(e);
 					}
 					resetButton.setEnabled(false);
 					saveButton.setEnabled(false);
 					deleteButton.setEnabled(true);
-					fileName.removeCallbacks(saveAction);
+					//fileName.removeCallbacks(saveAction);
 					editPattern.removeCallbacks(saveAction);
 				}
 			});
@@ -194,12 +205,15 @@ public class UnToaster extends ListActivity {
 				@Override
 				public void onClick(View v) {
 					try {
-						Util.getSharedPreferences(UnToaster.this, currentFile);
+						Util.prefs.put(currentFile, new MySettings(mContext, currentFile));
+						MySettings thisPackage = Util.prefs.get(currentFile), mine = Util.prefs.get("com.egingell.untoaster");
+						
+						thisPackage.get(mContext).edit().putString("content", editPattern.getText().toString()).commit();
+						mine.get(mContext).edit().putBoolean(currentFile, true).commit();
 
-						Util.prefsMap.get(currentFile).edit().clear().commit();
-						Util.getSharedPreferences(UnToaster.this, "com.egingell.untoaster");
-
-						Util.prefsMap.get("com.egingell.untoaster").edit().remove(currentFile).commit();
+						thisPackage.get(mContext).edit().clear().commit();
+						mine.get(mContext).edit().remove(currentFile).commit();
+						
 						deleteAndSort(currentFile);
 						//currentFile = "";
 						adapter.notifyDataSetChanged();
@@ -225,9 +239,9 @@ public class UnToaster extends ListActivity {
 						deleteButton.setEnabled(true);
 						saveButton.setEnabled(true);
 					}
-					fileName.removeCallbacks(saveAction);
+					//fileName.removeCallbacks(saveAction);
 					editPattern.removeCallbacks(saveAction);
-					fileName.postDelayed(saveAction, 5000);
+					//fileName.postDelayed(saveAction, 5000);
 				}
 				@Override
 				public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}
@@ -237,7 +251,7 @@ public class UnToaster extends ListActivity {
 	        editPattern.addTextChangedListener(new TextWatcher() {
 				@Override
 				public void afterTextChanged(Editable arg0) {
-			        cancelButton.setEnabled(true);
+			        //cancelButton.setEnabled(true);
 			        if (currentFile.equals("")) {
 			        	resetButton.setEnabled(false);
 			        } else {
@@ -251,7 +265,7 @@ public class UnToaster extends ListActivity {
 						deleteButton.setEnabled(true);
 						saveButton.setEnabled(true);
 					}
-					fileName.removeCallbacks(saveAction);
+					//fileName.removeCallbacks(saveAction);
 					editPattern.removeCallbacks(saveAction);
 					editPattern.postDelayed(saveAction, 5000);
 				}
@@ -264,6 +278,16 @@ public class UnToaster extends ListActivity {
 			Util.log(e);
 		}
     }
+	private void setText() {
+		Util.prefs.put(currentFile, new MySettings(mContext, currentFile));
+		MySettings thisPackage = Util.prefs.get(currentFile);
+		try {
+			editPattern.setText(thisPackage.get("content", ""));
+		} catch (Throwable e) {
+			Util.log(e);
+		}
+		fileName.setText(currentFile);
+	}
 	private void cancel() {
 		try {
 			editPattern.setText("");
@@ -271,9 +295,9 @@ public class UnToaster extends ListActivity {
 		} catch (Throwable e) {
 			Util.log(e);
 		}
-		fileName.removeCallbacks(saveAction);
+		//fileName.removeCallbacks(saveAction);
 		editPattern.removeCallbacks(saveAction);
-        cancelButton.setEnabled(false);
+        //cancelButton.setEnabled(false);
 		deleteButton.setEnabled(false);
 		resetButton.setEnabled(false);
 		saveButton.setEnabled(false);
@@ -299,14 +323,15 @@ public class UnToaster extends ListActivity {
     private void populateList() throws Throwable {
     	try {
 		   	//mStrings = Util.readDirectory(Util.extSdCard + "/" + Util.ignoresDir);
-    		try {
+    		if (mStrings != null) {
     			mStrings.clear();
-    		} catch (Throwable e) {
+    		} else {
     			mStrings = new ArrayList<String>();
     		}
-    		Util.getSharedPreferences(UnToaster.this, "com.egingell.untoaster");
+			Util.prefs.put(currentFile, new MySettings(this, currentFile));
+			MySettings mine = Util.prefs.get("com.egingell.untoaster");
 
-    		for (String key : Util.prefsMap.get("com.egingell.untoaster").getAll().keySet()) {
+    		for (String key : mine.get(this).getAll().keySet()) {
     			mStrings.add(key);
     		}
 	    	sort(true);

@@ -17,13 +17,12 @@
  *     along with UnToasted.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.egingell.untoaster;
+package com.egingell.untoaster.common;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import de.robv.android.xposed.XSharedPreferences;
-import de.robv.android.xposed.XposedBridge;
 
 
 public class MySettings {
@@ -44,7 +43,7 @@ public class MySettings {
 	    	xSharedPreferences = new XSharedPreferences("com.egingell.untoaster", name);
 	    	xSharedPreferences.makeWorldReadable();
     	} catch (Throwable e) {
-    		XposedBridge.log(e);
+    		Util.log(e);
     	}
     }
     /**

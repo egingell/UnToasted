@@ -20,15 +20,18 @@
  *     Logcat: logcat | grep "UnToaster"
  */
 
-package com.egingell.untoaster;
+package com.egingell.untoaster.xposed;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
+import com.egingell.untoaster.common.MySettings;
+import com.egingell.untoaster.common.Util;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.widget.LinearLayout;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,11 +42,11 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class XposedHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
+public class Hook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
 	//private static String PATH = null;
 	private HashMap<String,MySettings> prefs = new HashMap<String,MySettings>();
-	private XposedHook() {}
+	private Hook() {}
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
@@ -66,7 +69,7 @@ public class XposedHook implements IXposedHookLoadPackage, IXposedHookZygoteInit
 		    }
 			@Override
 			protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-				LinearLayout layout = (LinearLayout) ((Toast) param.thisObject).getView();
+				ViewGroup layout = (ViewGroup) ((Toast) param.thisObject).getView();
 				Context context = layout.getContext();
 				TextView view = (TextView) layout.findViewById(android.R.id.message);
 		    	boolean show = true;
@@ -120,7 +123,7 @@ public class XposedHook implements IXposedHookLoadPackage, IXposedHookZygoteInit
 								}
 				 			}
 				 		}
-				 		Util.log(packageName + "#show (" + appName + ")\n\thaystack: " + content + "\n\tneedles (all): " + all + "\n\tneedles (" + packageName + "): " + fPackage + "\n\ttoast: " + blocked);
+				 		Util.log(packageName + " (" + appName + ")\n\thaystack: " + content + "\n\tneedles (all): " + all + "\n\tneedles (" + packageName + "): " + fPackage + "\n\ttoast: " + blocked);
 			 		}
 				} catch (Throwable e) {
 					Util.log(e);

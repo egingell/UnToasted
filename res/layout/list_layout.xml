@@ -8,35 +8,40 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" >
+        android:gravity="center"
+        style="?android:attr/buttonBarStyle" >
 
         <Button
             android:id="@+id/deleteButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/deleteButton" />
+            android:text="@string/deleteButton"
+            style="?android:attr/buttonBarButtonStyle" />
 
         <Button
             android:id="@+id/resetButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/resetButton" />
+            android:text="@string/resetButton"
+            style="?android:attr/buttonBarButtonStyle" />
 
         <Button
             android:id="@+id/cancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/cancelButton" />
+            android:text="@string/cancelButton"
+            style="?android:attr/buttonBarButtonStyle" />
 
         <Button
             android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/saveButton" />
+            android:text="@string/saveButton"
+            style="?android:attr/buttonBarButtonStyle" />
     </LinearLayout>
 
     <EditText
