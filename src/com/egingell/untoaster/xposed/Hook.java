@@ -31,6 +31,7 @@ import com.egingell.untoaster.common.Util;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,7 +70,7 @@ public class Hook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		    }
 			@Override
 			protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-				ViewGroup layout = (ViewGroup) ((Toast) param.thisObject).getView();
+				View layout = (View) ((Toast) param.thisObject).getView();
 				Context context = layout.getContext();
 				TextView view = (TextView) layout.findViewById(android.R.id.message);
 		    	boolean show = true;
@@ -78,16 +79,18 @@ public class Hook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 					String packageName = context.getPackageName();
 					String appName = pm.getApplicationLabel(context.getApplicationInfo()).toString();
 					ArrayList<String> list = new ArrayList<String>();
-					list.add(splitPattern.matcher(view.getText().toString()).replaceAll(" ").trim());
+					try {
+						list.add(splitPattern.matcher(view.getText().toString()).replaceAll(" ").trim());
+					} catch (Throwable e) {}
 					int i = 0;
 					try {
 						do {
 							try {
-								list.add(splitPattern.matcher(((TextView) layout.getChildAt(i++)).getText().toString()).replaceAll(" ").trim());
+								list.add(splitPattern.matcher(((TextView) ((ViewGroup) layout).getChildAt(i++)).getText().toString()).replaceAll(" ").trim());
 							} catch (ClassCastException e) {}
-						} while (layout.getChildCount() > i);
+						} while (((ViewGroup) layout).getChildCount() > i);
 					} catch (Throwable e) {
-						Util.log("Unable to find a layout for " + packageName + " (" + appName + ")");
+						//Util.log("Unable to find a layout for " + packageName + " (" + appName + ")");
 					}
 					
 					MySettings settings = prefs.get(packageName), pAll = new MySettings("all"), appSettings = new MySettings("com.egingell.untoaster");
