@@ -38,8 +38,7 @@ import android.widget.Toast;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
-import de.robv.android.xposed.XC_MethodReplacement;
-import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -57,7 +56,7 @@ public class Hook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
-    	XC_MethodReplacement hook = new XC_MethodReplacement() {
+    	XC_MethodHook hook = new XC_MethodHook() {
 			final private Pattern splitPattern = Pattern.compile("[\r\n]+");
 		    private final HashMap<String,Pattern> patternCache = new HashMap<String,Pattern>();
 		    private boolean filter(String needle, String haystack) {
@@ -69,7 +68,7 @@ public class Hook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 			    return b;
 		    }
 			@Override
-			protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				View layout = (View) ((Toast) param.thisObject).getView();
 				Context context = layout.getContext();
 				TextView view = (TextView) layout.findViewById(android.R.id.message);
@@ -131,10 +130,8 @@ public class Hook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 				} catch (Throwable e) {
 					Util.log(e);
 				}
-		        if (show) {
-		        	return XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
-		        } else {
-		        	return null;
+		        if (!show) {
+		        	param.setResult(null);
 		        }
 			}
 		};
