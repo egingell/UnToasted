@@ -32,6 +32,7 @@ import com.egingell.untoaster.common.Util;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -129,7 +130,7 @@ public class Hook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 										}
 						 			}
 						 		}
-						 		Util.log(packageName + " (" + appName + ")\n\thaystack: " + content + "\n\tneedles (all): " + all + "\n\tneedles (" + packageName + "): " + fPackage + "\n\ttoast: " + blocked);
+						 		Log.i("UnToaster", packageName + " (" + appName + ")\n\thaystack: " + content + "\n\tneedles (all): " + all + "\n\tneedles (" + packageName + "): " + fPackage + "\n\ttoast: " + blocked);
 					 		}
 						} catch (Throwable e) {
 							Util.log(e);
