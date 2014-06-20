@@ -1,4 +1,4 @@
-/*
+/**
  * This file is part of UnToasted.
  *
  * Copyright 2014 Eric Gingell (c)
@@ -15,31 +15,21 @@
  *
  *     You should have received a copy of the GNU General Public License
  *     along with UnToasted.  If not, see <http://www.gnu.org/licenses/>.
+ *     
+ *     Xposed log: tail -f -n 100 /data/data/de.robv.android.xposed.installer/log/error.log  >/sdcard/UnToaster.log
+ *     Logcat: logcat | grep "UnToaster"
  */
 
 package com.egingell.untoaster.activities;
 
-import java.util.List;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 
-import com.egingell.untoaster.R;
-
-import android.app.ListActivity;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.widget.ArrayAdapter;
-
-public class AppsActivity extends ListActivity {
-	private List<ApplicationInfo> mStrings;
-	ArrayAdapter<ApplicationInfo> adapter;
-
+public class LogReceiver extends BroadcastReceiver {
 	@Override
-	protected void onCreate(final Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.apps_layout);
-		adapter = new ArrayAdapter<ApplicationInfo>(this, android.R.layout.simple_list_item_1, mStrings);
-		final PackageManager pm = getPackageManager();
-		mStrings = pm.getInstalledApplications(0);
-        setListAdapter(adapter);
-    }
+	public void onReceive(Context context, Intent intent) {
+		Log.i("UnToaster", intent.getStringExtra("logdata"));
+	}
 }

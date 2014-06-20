@@ -29,6 +29,7 @@ import com.egingell.untoaster.common.Util;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -48,7 +49,7 @@ public class EditActivity extends ListActivity {
 	private ArrayList<String> mStrings = new ArrayList<String>();
 	private String currentFile = "";
 	private EditText editPattern, fileName;
-	private Button saveButton, resetButton, cancelButton, deleteButton;
+	private Button saveButton, resetButton, cancelButton, deleteButton, log;
 	public static Context context;
 	private static Context mContext;
 	ArrayAdapter<String> adapter;
@@ -78,9 +79,12 @@ public class EditActivity extends ListActivity {
 			deleteButton = (Button) findViewById(R.id.deleteButton);
 			editPattern = (EditText) findViewById(R.id.editPattern);
 			fileName = (EditText) findViewById(R.id.fileName);
+			log = (Button) findViewById(R.id.log);
 			//TextView logView = (TextView) findViewById(R.id.log);
 			
 			//logView.setText(Util.getLoggedToApp());
+			editPattern.setHorizontallyScrolling(true);
+			fileName.setHorizontallyScrolling(true);
 			try {
 				currentFile = savedInstanceState.getString("currentFile", "");
 				setText();
@@ -199,6 +203,20 @@ public class EditActivity extends ListActivity {
 					deleteButton.setEnabled(true);
 					//fileName.removeCallbacks(saveAction);
 					editPattern.removeCallbacks(saveAction);
+				}
+			});
+	        log.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+					final String app = "#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=" + getPackageName() + ";component=" + getPackageName() + "/" + getPackageName() + ".activities.LogsActivity;end";
+					final Intent intent;
+					try {
+						intent = Intent.parseUri(app, 0);
+						startActivity(intent);
+					} catch (Throwable e) {
+						Util.log(e);
+					}
+					finish();
 				}
 			});
 	        deleteButton.setOnClickListener(new OnClickListener() {

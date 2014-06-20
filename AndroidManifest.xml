@@ -18,8 +18,8 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="17"
-    android:versionName="1.2.6"
+    android:versionCode="18"
+    android:versionName="1.2.7"
     package="com.egingell.untoaster" >
     <uses-sdk
         android:minSdkVersion="15"
@@ -28,6 +28,7 @@
 	    android:name="android.permission.READ_EXTERNAL_STORAGE" />
 	<uses-permission
 		android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<!-- <uses-permission android:name="android.permission.ACCESS_SUPERUSER" /> -->
 	<application
         android:allowBackup="true"
         android:icon="@drawable/toaster"
@@ -35,38 +36,27 @@
         <meta-data android:name="xposedmodule" android:value="true"/>
         <meta-data android:name="xposedminversion" android:value="2.0*"/>
         <meta-data android:name="xposeddescription" android:value="Selectively block Toast notifications."/>
-        <activity
+		<receiver android:name="com.egingell.untoaster.activities.LogReceiver">
+			<intent-filter>
+				<action android:name="com.egingell.untoaster.LOG_RECEIVED" />
+			</intent-filter>
+		</receiver>
+       <activity
             android:label="@string/app_name"
-            android:name=".activities.Welcome" >
-            <intent-filter >
-                <!-- <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" /> -->
-            </intent-filter>
-        </activity>
-        <activity
-            android:label="@string/app_name"
+            android:icon="@drawable/toaster"
             android:name=".activities.EditActivity">
             <intent-filter> 
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-                <!-- <action android:name="com.egingell.untoaster.activities.EditActivity" />  
-         		<category android:name="android.intent.category.DEFAULT" />  -->
      		</intent-filter>
         </activity>
         <activity
-            android:label="@string/app_name"
-            android:name=".activities.AppsActivity">
-            <intent-filter> 
-       			<action android:name="com.egingell.untoaster.activities.AppsActivity" />  
-         		<category android:name="android.intent.category.DEFAULT" />  
-     		</intent-filter>
-        </activity>
-        <activity
-            android:label="@string/app_name"
+            android:label="@string/app_name_logs"
+            android:icon="@drawable/toasterlogs"
             android:name=".activities.LogsActivity">
             <intent-filter> 
-       			<action android:name="com.egingell.untoaster.activities.LogsActivity" />  
-         		<category android:name="android.intent.category.DEFAULT" />  
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
      		</intent-filter>
         </activity>
     </application>

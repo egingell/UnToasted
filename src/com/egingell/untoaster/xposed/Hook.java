@@ -18,6 +18,7 @@
  *     
  *     Xposed log: tail -f -n 100 /data/data/de.robv.android.xposed.installer/log/error.log  >/sdcard/UnToaster.log
  *     Logcat: logcat | grep "UnToaster"
+ *     Logcat: logcat | grep "AndroidRuntime"
  */
 
 package com.egingell.untoaster.xposed;
@@ -31,8 +32,9 @@ import com.egingell.untoaster.common.MySettings;
 import com.egingell.untoaster.common.Util;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.util.Log;
+//import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -68,7 +70,7 @@ public class Hook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 				 	   patternCache.put(needle, Pattern.compile(needle));
 				    }
 				    boolean b = patternCache.get(needle).matcher(haystack).find();
-				    //Util.log("UnToaster#filter: checking\n\tpattern " + needle + "\n\tin " + haystack + "\n\tresult " + (b ? "true" : "false"));
+				    //Util.log("UnToaster#filter: checking\n    pattern " + needle + "\n    in " + haystack + "\n    result " + (b ? "true" : "false"));
 				    return b;
 			    }
 				@Override
@@ -130,7 +132,11 @@ public class Hook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 										}
 						 			}
 						 		}
-						 		Log.i("UnToaster", packageName + " (" + appName + ")\n\thaystack: " + content + "\n\tneedles (all): " + all + "\n\tneedles (" + packageName + "): " + fPackage + "\n\ttoast: " + blocked);
+								Intent intent = new Intent();
+								intent.setAction("com.egingell.untoaster.LOG_RECEIVED");
+								intent.putExtra("logdata", "package: " + packageName + "\n    app: " + appName + "\n    haystack: " + content + "\n    needles (all): " + all + "\n    needles (" + packageName + "): " + fPackage + "\n    toast: " + blocked + "\n ");
+								context.sendBroadcast(intent);
+						 		//Log.i("UnToaster", packageName + " (" + appName + ")\n    haystack: " + content + "\n    needles (all): " + all + "\n    needles (" + packageName + "): " + fPackage + "\n    toast: " + blocked);
 					 		}
 						} catch (Throwable e) {
 							Util.log(e);

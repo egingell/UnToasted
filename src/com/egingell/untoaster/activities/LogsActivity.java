@@ -19,34 +19,91 @@
 
 package com.egingell.untoaster.activities;
 
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.regex.Pattern;
 
 import com.egingell.untoaster.R;
 import com.egingell.untoaster.common.Util;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 
 @SuppressLint("NewApi")
 public class LogsActivity extends Activity {
+	Context mContext;
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mContext = this;
         setContentView(R.layout.logs_layout);
+        Button refresh = (Button) findViewById(R.id.refresh);
+        Button edit = (Button) findViewById(R.id.edit);
+		Button cancelButton = (Button) findViewById(R.id.cancelButton);
+        refresh.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View button) {
+				onResume();
+			}
+		});
+        cancelButton.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+        edit.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View arg0) {
+				final String app = "#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=" + getPackageName() + ";component=" + getPackageName() + "/" + getPackageName() + ".activities.EditActivity;end";
+				final Intent intent;
+				try {
+					intent = Intent.parseUri(app, 0);
+					startActivity(intent);
+				} catch (Throwable e) {
+					Util.log(e);
+				}
+			}
+		});
+	}
+	final Pattern pattern = Pattern.compile("[:]");
+	@Override
+	protected void onResume() {
+		super.onResume();
+        String text = "--No Logs--";
         EditText logs = (EditText) findViewById(R.id.logs);
-        String text = "";
-        final File logsDir = this.getDir("logs", Activity.MODE_PRIVATE);
-        for (File f : logsDir.listFiles()) {
+        logs.setHorizontallyScrolling(true);
+        logs.setTextIsSelectable(true);
+		try {
+			text = "";
+			InputStream stdout = Runtime.getRuntime().exec("logcat -d UnToaster:I *:S").getInputStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));
         	try {
-        		text += f.getName() + "\n";
-				text += Util.readFromFile(f) + "\n";
-        		text += "\n";
+    			String line;
+    			while ((line = reader.readLine()) != null) {
+    				try {
+	    				String[] strs = pattern.split(line, 2);
+    					line = strs[1];
+    				} catch (Throwable e) {
+    					//Util.log(e);
+    				}
+    				text += line + "\n";
+    			}
+    			reader.close();
 			} catch (Throwable e) {
 				Util.log(e);
 			}
-        }
+		} catch (Throwable e1) {
+			Util.log(e1);
+		}
         logs.setText(text);
 	}
 }

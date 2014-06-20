@@ -19,6 +19,7 @@
 
 <resources>
     <string name="app_name">UnToaster Xposed</string>
+    <string name="app_name_logs">UnToaster Logs</string>
     <string name="sorry">To add filters, put the package name (e.g &quot;com.egingell.untoaster&quot;) - check the Xposed log for the package name - and the text you\'re blocking (regex is OK) in the other box and click Save.</string>
     <string name="xposedlog">Xposed Log</string>
     <string name="back">Back</string>
@@ -27,11 +28,12 @@
     <string name="cancelButton">Exit</string>
     <string name="resetButton">Reset</string>
     <string name="deleteButton">Delete</string>
+    <string name="refresh">Refresh</string>
     <string name="packageHint">com.example.app - use "all" for all apps.</string>
     <string name="patternHint">Regex patterns or strings. One per line. Example:\n\nToast message\\.\nApp .* loaded\\.\n\nNote that since it does use regex, periods and other special characters must be escaped with a \"\\\".</string>
     <string name="tab1">Main</string>
     <string name="tab2">Log</string>
     <string name="existing">Existing</string>
     <string name="log">Logs</string>
-    <string name="apps">Apps</string>
+    <string name="edit">Edit</string>
 </resources>

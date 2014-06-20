@@ -5,6 +5,33 @@
     android:gravity="center"
     android:orientation="vertical" >
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        style="?android:attr/buttonBarStyle" >
+	    <Button
+	        android:id="@+id/refresh"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/refresh"
+            style="?android:attr/buttonBarButtonStyle" />
+	
+	    <Button
+	        android:id="@+id/edit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/edit"
+            style="?android:attr/buttonBarButtonStyle" />
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/cancelButton"
+            style="?android:attr/buttonBarButtonStyle" />
+	</LinearLayout>
+
     <EditText
         android:id="@+id/logs"
         android:layout_width="match_parent"
@@ -12,6 +39,7 @@
         android:ems="10"
         android:gravity="center_vertical|top"
         android:hint=""
-        android:inputType="textMultiLine" />
+        android:inputType="textMultiLine"
+        android:scrollHorizontally="true" />
 
 </LinearLayout>
