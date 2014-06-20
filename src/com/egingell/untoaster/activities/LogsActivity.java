@@ -71,6 +71,7 @@ public class LogsActivity extends Activity {
 				} catch (Throwable e) {
 					Util.log(e);
 				}
+				finish();
 			}
 		});
 	}
