@@ -27,6 +27,7 @@ import com.egingell.untoaster.R;
 import com.egingell.untoaster.common.MySettings;
 import com.egingell.untoaster.common.Util;
 
+import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -61,6 +62,7 @@ public class EditActivity extends ListActivity {
 		}
 	};
 
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -128,12 +130,12 @@ public class EditActivity extends ListActivity {
 				public void onItemClick(AdapterView<?> l, View v, int position, long id) {
 					// Make the newly clicked item the currently selected one.
 			    	TextView tv = (TextView) v;
-		    		Log.e("UnToaster", "Clicked position " + position + " with ID " + id + ".");
+		    		Log.v("UnToaster", "Clicked position " + position + " with ID " + id + ".");
 			    	try {
 			    		currentFile = tv.getText().toString();
 			    		savedInstanceState.putString("currentFile", currentFile);
 			    	} catch (NullPointerException e) {
-			    		Util.log(e);
+			    		// Util.log(e);
 			    	}
 			    	fileName.setText(currentFile);
 			    	try {
@@ -206,6 +208,7 @@ public class EditActivity extends ListActivity {
 				}
 			});
 	        log.setOnClickListener(new OnClickListener(){
+				@SuppressLint("NewApi")
 				@Override
 				public void onClick(View arg0) {
 					final String app = "#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=" + getPackageName() + ";component=" + getPackageName() + "/" + getPackageName() + ".activities.LogsActivity;end";

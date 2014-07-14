@@ -31,6 +31,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -90,13 +93,20 @@ public class LogsActivity extends Activity {
         	try {
     			String line;
     			while ((line = reader.readLine()) != null) {
-    				try {
-	    				String[] strs = pattern.split(line, 2);
-    					line = strs[1];
-    				} catch (Throwable e) {
-    					//Util.log(e);
+    				if (!line.equals("--------- beginning of /dev/log/main")) {
+	    				try {
+		    				String[] strs = pattern.split(line, 2);
+	    					line = strs[1];
+	    				} catch (Throwable e) {
+	    					//Util.log(e);
+	    				}
+	    				text += line + "\n";
+    				} else {
+    					final PackageManager pm = getPackageManager();
+    					final PackageInfo packageInfo = pm.getPackageInfo(getPackageName(), 0);
+    					final ApplicationInfo ai = getApplicationInfo();
+    					text += "Logs for " + pm.getApplicationLabel(ai).toString() + " (v" + packageInfo.versionName + ")\n\n";
     				}
-    				text += line + "\n";
     			}
     			reader.close();
 			} catch (Throwable e) {
